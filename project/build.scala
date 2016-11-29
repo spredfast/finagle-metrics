@@ -21,6 +21,10 @@ object AppBuilder extends Build {
     javacOptions in compile ++= Seq("-target", "8", "-source", "8")
   )
 
+  val sfPublishSettings = Seq(
+    publishTo := Some("Spredfast Artifactory" at "https://buildrepo.sf-ops.net/artifactory/sf-release-local")
+  )
+
   val appReleaseSettings = releaseSettings ++ Seq(
     tagName        <<= (version in ThisBuild) map (v => "v" + v),
     tagComment     <<= (version in ThisBuild) map (v => "[BUILD] Release %s" format v),
@@ -44,6 +48,7 @@ object AppBuilder extends Build {
   lazy val app = Project(appName, file("."))
     .settings(appSettings: _*)
     .settings(appReleaseSettings: _*)
+    .settings(sfPublishSettings: _*)
     .settings(resolvers ++= appDependencyResolvers)
     .settings(libraryDependencies ++= appDependencies)
 
