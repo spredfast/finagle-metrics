@@ -2,7 +2,7 @@ import sbt._
 
 object Dependencies {
 
-  val finagleVersion         = "6.35.0"
+  val finagleVersion         = "6.38.0"
   val metricsVersion         = "3.1.2"
 
   val finagleCore            = "com.twitter"           %% "finagle-core"     % finagleVersion
