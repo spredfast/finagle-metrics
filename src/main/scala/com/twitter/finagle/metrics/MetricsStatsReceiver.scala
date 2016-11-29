@@ -13,16 +13,18 @@ object MetricsStatsReceiver {
   }
 
   private[metrics] case class MetricGauge(name: String)(f: => Float) extends Gauge {
-    // remove old gauge's value before adding a new one
-    metrics.getGauges(new MetricFilter() {
-      override def matches(metricName: String, metric: Metric): Boolean =
-        metricName == name
-    }).asScala
-      .foreach(entry => metrics.remove(entry._1))
+    metrics.synchronized {
+      // remove old gauge's value before adding a new one
+      metrics.getGauges(new MetricFilter() {
+        override def matches(metricName: String, metric: Metric): Boolean =
+          metricName == name
+      }).asScala
+        .foreach(entry => metrics.remove(entry._1))
 
-    metrics.register(name, new MGauge[Float]() {
-      override def getValue(): Float = f
-    })
+      metrics.register(name, new MGauge[Float]() {
+        override def getValue(): Float = f
+      })
+    }
 
     override def remove(): Unit = metrics.remove(name)
   }
